@@ -18,7 +18,7 @@ export default async function DashboardLayout({
     <div className='min-h-screen bg-slate-950'>
       <Sidebar user={session.user} />
       <BottomNav />
-      <main className='lg:ml-64 min-h-screen pb-20 lg:pb-0'>
+      <main className='lg:ml-64 min-h-screen pb-20 lg:pb-0 overflow-x-hidden'>
         <div className='max-w-5xl mx-auto p-4 lg:p-8'>{children}</div>
       </main>
     </div>
