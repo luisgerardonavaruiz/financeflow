@@ -1,18 +1,23 @@
-version: "3.8"
+version: '3.8'
 
 services:
   postgres:
-    image: postgres:16
-    container_name: financeflow_db
+    image: postgres
+    container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: financeflow_user
-      POSTGRES_PASSWORD: financeflow_pass
-      POSTGRES_DB: financeflow_db
+      POSTGRES_USER: financeflowuser
+      POSTGRES_PASSWORD: financeflowpass
+      POSTGRES_DB: financeflowdb
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - '5432:5432'
 
-volumes:
-  postgres_data:
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'admin@admin.com'
+      PGADMIN_DEFAULT_PASSWORD: 'admin'
+    ports:
+      - '80:80'
+    depends_on:
+      - postgres

@@ -8,5 +8,6 @@
   "editor.wordWrap": "on",
   "tailwindCSS.experimental.classRegex": [
     ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ]
+  ],
+  "prisma.pinToPrisma6": true
 }
