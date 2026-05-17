@@ -1,7 +1,7 @@
-import Anthropic from "@anthropic-ai/sdk";
+import Groq from "groq-sdk";
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 export interface GastoParaAnalisis {
@@ -48,7 +48,7 @@ ${gastosInnecesarios.map((g) => `- ${g.description}: $${g.amount.toFixed(2)} (${
 GASTOS DE RIESGO FINANCIERO (${gastosRiesgo.length} gastos):
 ${gastosRiesgo.map((g) => `- ${g.description}: $${g.amount.toFixed(2)} (${g.category})`).join("\n")}
 
-Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta, sin texto adicional antes o después:
+Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta, sin texto adicional antes o después, sin bloques de código markdown:
 {
   "resumenGeneral": "párrafo de 2-3 oraciones con el resumen general de la situación financiera",
   "gastosNecesarios": "análisis breve de los gastos necesarios",
@@ -61,22 +61,25 @@ Responde ÚNICAMENTE con un objeto JSON válido con esta estructura exacta, sin 
     "consejo 4 específico y accionable",
     "consejo 5 específico y accionable"
   ],
-  "puntuacionSalud": número entre 0 y 100 que representa la salud financiera
+  "puntuacionSalud": 75
 }`;
 
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1500,
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
     messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
+    max_tokens: 1500,
   });
 
-  const content = message.content[0];
-  if (content.type !== "text") {
-    throw new Error("Respuesta inesperada de la IA");
-  }
+  const text = completion.choices[0].message.content?.trim() ?? "";
 
-  const jsonText = content.text.trim();
-  const analisis = JSON.parse(jsonText) as AnalisisFinanciero;
+  const cleaned = text
+    .replace(/^```json\n?/, "")
+    .replace(/^```\n?/, "")
+    .replace(/\n?```$/, "")
+    .trim();
+
+  const analisis = JSON.parse(cleaned) as AnalisisFinanciero;
   return analisis;
 }
 
@@ -94,17 +97,23 @@ DATOS:
 - Gastos de riesgo: $${gastos.filter((g) => g.type === "RISK").reduce((s, g) => s + g.amount, 0).toFixed(2)} MXN
 - Gastos innecesarios: $${gastos.filter((g) => g.type === "UNNECESSARY").reduce((s, g) => s + g.amount, 0).toFixed(2)} MXN
 
-Responde ÚNICAMENTE con un array JSON de 5 strings, sin texto adicional:
+Responde ÚNICAMENTE con un array JSON de 5 strings, sin texto adicional, sin bloques de código markdown:
 ["consejo 1", "consejo 2", "consejo 3", "consejo 4", "consejo 5"]`;
 
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 800,
+  const completion = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
     messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
+    max_tokens: 800,
   });
 
-  const content = message.content[0];
-  if (content.type !== "text") throw new Error("Respuesta inesperada");
+  const text = completion.choices[0].message.content?.trim() ?? "";
 
-  return JSON.parse(content.text.trim()) as string[];
+  const cleaned = text
+    .replace(/^```json\n?/, "")
+    .replace(/^```\n?/, "")
+    .replace(/\n?```$/, "")
+    .trim();
+
+  return JSON.parse(cleaned) as string[];
 }
