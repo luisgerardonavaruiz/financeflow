@@ -5,7 +5,7 @@ import Input from '@/components/ui/Input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Suspense, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -18,7 +18,6 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const registered = searchParams.get('registered')
   const [serverError, setServerError] = useState('')
@@ -45,8 +44,7 @@ function LoginForm() {
         return
       }
 
-      router.push('/dashboard')
-      router.refresh()
+      window.location.href = '/dashboard'
     } catch {
       setServerError('Error de conexión. Intenta de nuevo.')
     }
