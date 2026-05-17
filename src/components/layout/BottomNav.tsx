@@ -4,9 +4,11 @@ import {
   FileText,
   LayoutDashboard,
   Lightbulb,
+  LogOut,
   Receipt,
   Wallet,
 } from 'lucide-react'
+import { signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -23,7 +25,7 @@ export default function BottomNav() {
 
   return (
     <nav className='lg:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 z-50'>
-      <div className='flex items-center justify-around px-2 py-2'>
+      <div className='flex items-center justify-around px-1 py-2'>
         {navItems.map(({ href, label, icon: Icon }) => {
           const isActive = pathname === href
           return (
@@ -31,7 +33,7 @@ export default function BottomNav() {
               key={href}
               href={href}
               className={`
-                flex flex-col items-center gap-1 px-3 py-1.5 rounded-lg
+                flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg
                 transition-all duration-200 min-w-0 flex-1
                 ${isActive ? 'text-emerald-400' : 'text-slate-500'}
               `}
@@ -41,6 +43,15 @@ export default function BottomNav() {
             </Link>
           )
         })}
+        <button
+          onClick={() => signOut({ callbackUrl: '/login' })}
+          className='flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg
+            transition-all duration-200 min-w-0 flex-1 text-slate-500
+            hover:text-red-400'
+        >
+          <LogOut size={20} />
+          <span className='text-xs font-medium'>Salir</span>
+        </button>
       </div>
     </nav>
   )
