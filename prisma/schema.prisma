@@ -16,8 +16,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  expenses       Expense[]
-  monthlyBudgets MonthlyBudget[]
+  expenses          Expense[]
+  monthlyBudgets    MonthlyBudget[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -52,6 +53,19 @@ model MonthlyBudget {
 
   @@unique([userId, month, year])
   @@map("monthly_budgets")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("push_subscriptions")
 }
 
 enum ExpenseCategory {
