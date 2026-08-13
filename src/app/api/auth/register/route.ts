@@ -42,14 +42,6 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-      },
-    })
-
     // Enviar email de bienvenida
     const appUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
     await sendWelcomeEmail(email, name, appUrl).catch((err) =>
