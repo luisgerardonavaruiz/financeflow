@@ -108,3 +108,64 @@ export async function sendWelcomeEmail(
     `,
   })
 }
+
+export async function sendCustomEmail(
+  to: string,
+  name: string,
+  subject: string,
+  message: string
+) {
+  await transporter.sendMail({
+    from: `"FinanceFlow" <${process.env.GMAIL_USER}>`,
+    to,
+    subject,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body style="margin:0;padding:0;background:#0f172a;font-family:Arial,sans-serif;">
+          <div style="max-width:560px;margin:0 auto;padding:40px 20px;">
+
+            <div style="text-align:center;margin-bottom:32px;">
+              <div style="background:#10b981;width:64px;height:64px;border-radius:16px;
+                display:inline-flex;align-items:center;justify-content:center;
+                font-size:32px;font-weight:bold;color:white;">
+                F
+              </div>
+              <h1 style="color:white;font-size:24px;margin:16px 0 4px;">
+                FinanceFlow
+              </h1>
+            </div>
+
+            <div style="background:#1e293b;border-radius:16px;padding:32px;
+              border:1px solid #334155;">
+              <h2 style="color:white;font-size:20px;margin:0 0 16px;">
+                Hola, ${name} 👋
+              </h2>
+              <div style="color:#94a3b8;font-size:15px;line-height:1.8;
+                white-space:pre-wrap;">
+                ${message}
+              </div>
+
+              <div style="text-align:center;margin-top:24px;">
+                <a href="${process.env.NEXTAUTH_URL}/dashboard"
+                  style="background:#10b981;color:white;padding:14px 32px;
+                  border-radius:10px;text-decoration:none;font-weight:bold;
+                  font-size:15px;display:inline-block;">
+                  Ir a FinanceFlow →
+                </a>
+              </div>
+            </div>
+
+            <p style="color:#475569;font-size:12px;text-align:center;margin-top:24px;">
+              Este correo fue enviado desde FinanceFlow.
+            </p>
+          </div>
+        </body>
+      </html>
+    `,
+  });
+}
