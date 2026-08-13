@@ -1,3 +1,4 @@
+import { sendWelcomeEmail } from '@/lib/email'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { NextRequest, NextResponse } from 'next/server'
@@ -40,6 +41,20 @@ export async function POST(req: NextRequest) {
         password: hashedPassword,
       },
     })
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+      },
+    })
+
+    // Enviar email de bienvenida
+    const appUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
+    await sendWelcomeEmail(email, name, appUrl).catch((err) =>
+      console.error('Error enviando email de bienvenida:', err),
+    )
 
     return NextResponse.json(
       { message: 'Usuario creado exitosamente', userId: user.id },
